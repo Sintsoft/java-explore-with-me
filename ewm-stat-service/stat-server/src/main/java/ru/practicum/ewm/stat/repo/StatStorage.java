@@ -27,15 +27,28 @@ public class StatStorage {
     private final JdbcTemplate jdbc;
 
     @Transactional
-    public void saveStatHit(StatLogEntry entry) {}
+    public void saveStatHit(StatLogEntry entry) {
+        try {
+            repository.save(entry);
+        } catch (Exception sql) {
+            throw new RuntimeException();
+        }
+    }
 
     public List<UriStatisticResponseDTO> getStats(LocalDateTime start,
                                                   LocalDateTime end,
                                                   Boolean unique,
-                                                  List<String> uri) {
-        StringBuilder sql = new StringBuilder().append("select uri, application, count(*) ");
-        return jdbc.queryForStream("select uri, application, count(*) " +
-                "from stat_log sl " + "group by uri, application", new StatisticMapper()).collect(Collectors.toList());
+                                                  List<String> uris) {
+        StringBuilder sql = new StringBuilder().append("select uri, application, count(*) from ( select ");
+        if (unique) {
+            sql.append("distinct ");
+        }
+        sql.append("uri, application, ip from stat_log sl where uri in (");
+        for (String uri : uris) {
+            sql.append("'" + uri + "'");
+        }
+        sql.append(") ) sub group by uri, application");
+        return jdbc.queryForStream(sql.toString(), new StatisticMapper()).collect(Collectors.toList());
     }
 
     private static class StatisticMapper implements RowMapper<UriStatisticResponseDTO> {
