@@ -5,20 +5,20 @@
         <groupId>ru.practicum.ewm</groupId>
         <artifactId>explore-with-me</artifactId>
         <version>0.0.1</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>ru.practicum.ewm</groupId>
-    <artifactId>stat-dto</artifactId>
+    <artifactId>ewm-utility</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
 
-    <name>stat-dto</name>
-    <url>http://maven.apache.org</url>
+    <name>Ewm common utility module</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

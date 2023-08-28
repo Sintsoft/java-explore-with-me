@@ -15,6 +15,7 @@
         <module>ewm-stat-service</module>
 		<module>ewm-stat-service/stat-dto</module>
 		<module>ewm-stat-service/stat-server</module>
+		<module>ewm-utility</module>
 	</modules>
 
     <groupId>ru.practicum.ewm</groupId>
