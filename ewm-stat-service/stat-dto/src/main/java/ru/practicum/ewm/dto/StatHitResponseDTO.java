@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StatHitResponseDTO {
 
-    private final Long id;
+    private Long id;
 
     private String uri;
 

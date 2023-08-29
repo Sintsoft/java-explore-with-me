@@ -11,9 +11,9 @@ import ru.practicum.ewm.stat.model.StatLogEntry;
 import ru.practicum.ewm.stat.repo.StatEntryRepository;
 import ru.practicum.ewm.stat.utility.PersistenceConfig;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @DataJpaTest

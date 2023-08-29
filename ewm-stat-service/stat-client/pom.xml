@@ -25,11 +25,5 @@
             <artifactId>stat-dto</artifactId>
             <version>0.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>ru.practicum.ewm</groupId>
-            <artifactId>stat-dto</artifactId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>

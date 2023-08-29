@@ -6,6 +6,7 @@ services:
     container_name: ewm-stat-service
     depends_on:
       - stats-db
+    restart: on-failure
     ports:
       - "9090:9090"
     environment:
@@ -25,6 +26,7 @@ services:
   ewm-service:
     build: ewn-main-service/.
     container_name: ewm-main-service
+    restart: on-failure
     depends_on:
       - ewm-db
       - stats-server
