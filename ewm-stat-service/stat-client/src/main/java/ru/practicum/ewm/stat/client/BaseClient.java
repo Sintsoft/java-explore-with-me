@@ -25,20 +25,20 @@ class BaseClient {
     }
 
 
-    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, T body) {
-        HttpEntity<T> requestEntity = new HttpEntity<>(body);
+    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable  T body) {
+        HttpEntity<T> requestEntity = new HttpEntity<>(body, null);
 
-        ResponseEntity<Object> shareitServerResponse;
+        ResponseEntity<Object> ewmResponse;
         try {
             if (parameters != null) {
-                shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
+                ewmResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
-                shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class);
+                ewmResponse = rest.exchange(path, method, requestEntity, Object.class);
             }
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
-        return prepareGatewayResponse(shareitServerResponse);
+        return prepareGatewayResponse(ewmResponse);
     }
 
     private HttpHeaders defaultHeaders(Long userId) {
