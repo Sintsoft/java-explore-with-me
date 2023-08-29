@@ -5,7 +5,6 @@
         <groupId>ru.practicum.ewm</groupId>
         <artifactId>explore-with-me</artifactId>
         <version>0.0.1</version>
-        <relativePath/>
     </parent>
 
     <groupId>ru.practicum.ewm</groupId>
