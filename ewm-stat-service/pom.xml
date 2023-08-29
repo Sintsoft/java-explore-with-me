@@ -13,10 +13,10 @@
     <packaging>jar</packaging>
 
     <name>ewm-stat-service</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <start-class>ru.practicum.ewm.stat.StatServer</start-class>
     </properties>
 
     <dependencies>
@@ -26,4 +26,5 @@
             <version>0.0.1</version>
         </dependency>
     </dependencies>
+
 </project>

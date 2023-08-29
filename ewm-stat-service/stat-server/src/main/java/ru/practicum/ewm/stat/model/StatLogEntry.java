@@ -2,8 +2,7 @@ package ru.practicum.ewm.stat.model;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.ewm.stat.dto.StatHitRequestDTO;
-import ru.practicum.ewm.stat.dto.StatHitResponseDTO;
+import ru.practicum.ewm.dto.StatHitRequestDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -16,6 +16,8 @@
 		<module>ewm-stat-service/stat-dto</module>
 		<module>ewm-stat-service/stat-server</module>
 		<module>ewm-utility</module>
+		<module>ewm-stat-service/stat-client</module>
+		<module>ewn-main-service</module>
 	</modules>
 
     <groupId>ru.practicum.ewm</groupId>
@@ -58,8 +60,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<!--
-		Database dependensies
+		Database dependencies
 		-->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -84,7 +91,7 @@
 		</dependency>
 
 		<!--
-		Common dependesies
+		Common dependecies
 		-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -92,18 +99,27 @@
 		</dependency>
 
 		<!--
-		Tests dependensies
+		Tests dependencies
 		-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!--
+		Build dependencies
+		-->
+
     </dependencies>
 
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>

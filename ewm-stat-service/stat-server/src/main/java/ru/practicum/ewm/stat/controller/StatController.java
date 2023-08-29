@@ -4,16 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.stat.dto.StatHitRequestDTO;
-import ru.practicum.ewm.stat.dto.UriStatisticResponseDTO;
+import ru.practicum.ewm.dto.StatHitRequestDTO;
+import ru.practicum.ewm.dto.UriStatisticResponseDTO;
 import ru.practicum.ewm.stat.service.StatService;
-import ru.practicum.ewm.utility.exceptions.EwmInvalidRequestParameterException;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j

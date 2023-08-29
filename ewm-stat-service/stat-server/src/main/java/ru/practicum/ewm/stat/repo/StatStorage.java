@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.stat.dto.UriStatisticResponseDTO;
+import ru.practicum.ewm.dto.UriStatisticResponseDTO;
 import ru.practicum.ewm.stat.model.StatLogEntry;
 import ru.practicum.ewm.utility.exceptions.EwmSQLFailedException;
 
@@ -36,7 +36,7 @@ public class StatStorage {
         try {
             repository.save(entry);
         } catch (Exception ex) {
-            throw new EwmSQLFailedException("Failed to add statistic entry due to: " + ex.getMessage() );
+            throw new EwmSQLFailedException("Failed to add statistic entry due to: " + ex.getMessage());
         }
     }
 
@@ -46,7 +46,7 @@ public class StatStorage {
                                                   List<String> uris) {
         log.trace("Enter method StatStorage.getStats");
         log.debug("Getting statistic params: start - " + start.toString()
-                + ", end - " + end.toString() + ", unique - " + unique + ", uris - " + uris.toString() );
+                + ", end - " + end.toString() + ", unique - " + unique + ", uris - " + uris.toString());
         StringBuilder sql = new StringBuilder().append("select uri, application, count(*) from ( select ");
         if (unique) {
             sql.append("distinct ");
