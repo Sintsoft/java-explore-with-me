@@ -1,7 +1,6 @@
 version: '3.1'
 services:
   stats-server:
-    container_name: ewm-stat-service
     depends_on:
       - stats-db
     ports:
@@ -17,7 +16,6 @@ services:
       - STAT_DB_PASSWORD=${STAT_DB_PASSWORD}
 
   stats-db:
-    container_name: ewm-stat-db
     image: postgres:14-alpine
     networks:
       - ewm-net
@@ -29,7 +27,6 @@ services:
       - POSTGRES_PASSWORD=${STAT_DB_PASSWORD}
 
   ewm-service:
-    container_name: ewm-main-service
     depends_on:
       - stats-server
       - ewm-db
@@ -40,13 +37,12 @@ services:
     build: ewm-main/.
     environment:
       - MAIN_PORT=${MAIN_PORT}
-      - MAIN_DB_PORT=${STAT_DB_PORT}
-      - MAIN_DB_NAME=${STAT_DB_NAME}
-      - MAIN_DB_LOGIN=${STAT_DB_LOGIN}
-      - MAIN_DB_PASSWORD=${STAT_DB_PASSWORD}
+      - MAIN_DB_PORT=${MAIN_DB_PORT}
+      - MAIN_DB_NAME=${MAIN_DB_NAME}
+      - MAIN_DB_LOGIN=${MAIN_DB_LOGIN}
+      - MAIN_DB_PASSWORD=${MAIN_DB_PASSWORD}
 
   ewm-db:
-    container_name: ewm-db
     image: postgres:14-alpine
     networks:
       - ewm-net
