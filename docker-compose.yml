@@ -33,6 +33,8 @@ services:
     depends_on:
       - stats-server
       - ewm-db
+    networks:
+      - ewm-net
     ports:
       - "${MAIN_PORT}:${MAIN_PORT}"
     build: ewm-main/.
