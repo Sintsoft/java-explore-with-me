@@ -6,7 +6,6 @@ import lombok.Data;
 import javax.persistence.Entity;
 
 @Data
-@Entity
 @AllArgsConstructor
 public class StatUriHitsResponseDTO {
 
