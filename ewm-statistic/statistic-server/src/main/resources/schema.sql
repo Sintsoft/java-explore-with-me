@@ -3,5 +3,5 @@ create table if not exists stat_log (
 	application VARCHAR(10) not null,
 	ip VARCHAR(15) not null,
 	uri text not null,
-	hit_timestamp TIMESTAMP WITHOUT TIME zone
+	hit_timestamp TIMESTAMP WITHOUT TIME zone not null
 );

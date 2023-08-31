@@ -5,8 +5,6 @@ services:
       - stats-db
     ports:
       - "${STAT_PORT}:${STAT_PORT}"
-    networks:
-      - ewm-net
     build: ewm-statistic/statistic-server/.
     environment:
       - STAT_PORT=${STAT_PORT}
@@ -17,8 +15,6 @@ services:
 
   stats-db:
     image: postgres:14-alpine
-    networks:
-      - ewm-net
     ports:
       - "${STAT_DB_PORT}:5432"
     environment:
@@ -30,8 +26,6 @@ services:
     depends_on:
       - stats-server
       - ewm-db
-    networks:
-      - ewm-net
     ports:
       - "${MAIN_PORT}:${MAIN_PORT}"
     build: ewm-main/.
@@ -44,8 +38,6 @@ services:
 
   ewm-db:
     image: postgres:14-alpine
-    networks:
-      - ewm-net
     ports:
       - "${MAIN_DB_PORT}:5432"
     environment:
@@ -53,6 +45,3 @@ services:
       - POSTGRES_USER=${MAIN_DB_LOGIN}
       - POSTGRES_PASSWORD=${MAIN_DB_PASSWORD}
 
-networks:
-  ewm-net:
-    driver: bridge
