@@ -48,21 +48,24 @@ public class StatStorage {
                                                  List<String> uris) {
         log.trace("Enter method StatStorage.getStats");
         log.debug("Getting statistic params: start - " + start.toString()
-                + ", end - " + end.toString() + ", unique - " + unique + ", uris - " + uris.toString());
-        StringBuilder sql = new StringBuilder().append("select uri, application, count(*) from ( select ");
+                + ", end - " + end.toString() + ", unique - " + unique + ", uris - " + uris);
+        StringBuilder sql = new StringBuilder().append("select uri, application, count(*) as cnt from ( select ");
         if (unique) {
             sql.append("distinct ");
         }
-        sql.append("uri, application, ip from stat_log sl where uri in (");
-        for (String uri : uris) {
-            sql.append("'").append(uri).append("'");
+        sql.append("uri, application, ip from stat_log sl where ");
+        if (uris != null && !uris.isEmpty()) {
+            log.info("Not empty uris in request");
+            sql.append("uri in ('")
+                    .append(String.join("', '", uris))
+                    .append("') and ");
         }
         sql
-                .append(") and '")
-                .append(start.format(DateTimeFormatter.ISO_DATE_TIME))
-                .append("' < hit_timestamp and '")
-                .append(end.format(DateTimeFormatter.ISO_DATE_TIME))
-                .append("' > hit_timestamp ) sub group by uri, application");
+            .append("'")
+            .append(start.format(DateTimeFormatter.ISO_DATE_TIME))
+            .append("' < hit_timestamp and '")
+            .append(end.format(DateTimeFormatter.ISO_DATE_TIME))
+            .append("' > hit_timestamp ) sub group by uri, application order by cnt desc");
         log.info("Formed query = " + sql);
         return jdbc.queryForStream(sql.toString(), new StatisticMapper()).collect(Collectors.toList());
     }

@@ -43,9 +43,6 @@ public class StatService {
             log.info("Request start time is after end time");
             throw new EwmInvalidRequestParameterException("Start time should be earlier than end time");
         }
-        if (uris.isEmpty()) {
-            return List.of();
-        }
         return storage.getStats(decStart, decEnd, unique, uris);
     }
 
