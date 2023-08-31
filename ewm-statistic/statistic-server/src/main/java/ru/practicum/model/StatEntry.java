@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import ru.practicum.dto.StatHitRequestDTO;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -34,4 +35,15 @@ public class StatEntry {
     @NotNull
     @Column(name = "hit_timestamp", nullable = false)
     private final LocalDateTime timestamp;
+
+    public static StatEntry fromDTO(StatHitRequestDTO dto) {
+        log.debug("Creating entry from DTO. dto - " + dto.toString());
+        return new StatEntry(
+                null,
+                dto.getUri(),
+                dto.getApp(),
+                dto.getIp(),
+                dto.getTimestamp()
+        );
+    }
 }

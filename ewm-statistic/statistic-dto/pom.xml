@@ -3,22 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.practicum</groupId>
-        <artifactId>explore-with-me</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>ewm-statistic</artifactId>
+        <version>0.0.1</version>
     </parent>
 
-    <artifactId>ewm-statistic</artifactId>
-    <version>0.0.1</version>
-    <packaging>pom</packaging>
+    <artifactId>statistic-dto</artifactId>
+    <packaging>jar</packaging>
 
-    <name>ewm-statistic</name>
-    <modules>
-        <module>statistic-server</module>
-        <module>statistic-dto</module>
-    </modules>
+    <name>statistic-dto</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
 
 </project>
