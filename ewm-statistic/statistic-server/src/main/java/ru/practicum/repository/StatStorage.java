@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.model.StatEntry;
+import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
 import javax.transaction.Transactional;
 import java.sql.ResultSet;
@@ -37,7 +38,7 @@ public class StatStorage {
         } catch (DataIntegrityViolationException exception) {
             String message = "Failed to save statistic entry due to: " + exception.getMessage();
             log.warn(message);
-            throw new RuntimeException(message);
+            throw new EwmSQLFailedException(message);
         }
     }
 
