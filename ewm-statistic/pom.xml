@@ -15,6 +15,7 @@
     <modules>
         <module>statistic-server</module>
         <module>statistic-dto</module>
+        <module>statistic-client</module>
     </modules>
 
     <properties>
