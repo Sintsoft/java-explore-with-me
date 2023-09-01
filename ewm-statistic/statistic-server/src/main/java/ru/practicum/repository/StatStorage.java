@@ -17,7 +17,6 @@ import ru.practicum.utility.exceptions.EwmSQLFailedException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
