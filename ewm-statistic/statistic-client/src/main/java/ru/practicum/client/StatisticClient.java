@@ -36,11 +36,9 @@ public class StatisticClient extends BaseClient {
         Map<String, Object> parameters = Map.of(
                 "start", start,
                 "end", end,
-                "unique", unique
+                "unique", unique,
+                "uris", uris
         );
-        for (String uri : uris) {
-            parameters.put("uris", uri);
-        }
         return get("/stats", parameters);
     }
 }

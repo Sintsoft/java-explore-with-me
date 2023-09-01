@@ -1,18 +1,19 @@
 package ru.practicum.repository;
 
-import ru.practicum.dto.StatUriHitsResponseDTO;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.dto.StatUriHitsResponseDTO;
 import ru.practicum.model.StatEntry;
 import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
-import javax.transaction.Transactional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class StatStorage {
     private final StatRepository repository;
 
     @Autowired
-    private final JdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
     @Transactional
     public void saveHit(StatEntry statisticEntry) {
@@ -42,6 +43,7 @@ public class StatStorage {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StatUriHitsResponseDTO> getStats(LocalDateTime start,
                                                  LocalDateTime end,
                                                  Boolean unique,
@@ -49,25 +51,29 @@ public class StatStorage {
         log.trace("Enter method StatStorage.getStats");
         log.debug("Getting statistic params: start - " + start.toString()
                 + ", end - " + end.toString() + ", unique - " + unique + ", uris - " + uris);
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("uris", uris)
+                .addValue("start", start)
+                .addValue("end", end);
+        return jdbc.queryForStream(
+                formatSQLForHitStatistic(uris != null && !uris.isEmpty(), unique),
+                namedParameters,
+                new StatisticMapper()).collect(Collectors.toList());
+    }
+
+    private String formatSQLForHitStatistic(boolean listIsEmpty, boolean unique) {
         StringBuilder sql = new StringBuilder().append("select uri, application, count(*) as cnt from ( select ");
         if (unique) {
             sql.append("distinct ");
         }
         sql.append("uri, application, ip from stat_log sl where ");
-        if (uris != null && !uris.isEmpty()) {
+        if (listIsEmpty) {
             log.info("Not empty uris in request");
-            sql.append("uri in ('")
-                    .append(String.join("', '", uris))
-                    .append("') and ");
+            sql.append("uri in (:uris) and ");
         }
-        sql
-            .append("'")
-            .append(start.format(DateTimeFormatter.ISO_DATE_TIME))
-            .append("' < hit_timestamp and '")
-            .append(end.format(DateTimeFormatter.ISO_DATE_TIME))
-            .append("' > hit_timestamp ) sub group by uri, application order by cnt desc");
-        log.info("Formed query = " + sql);
-        return jdbc.queryForStream(sql.toString(), new StatisticMapper()).collect(Collectors.toList());
+        sql.append("hit_timestamp BETWEEN :start and :end ) sub group by uri, application order by cnt desc");
+        return sql.toString();
+
     }
 
     private static class StatisticMapper implements RowMapper<StatUriHitsResponseDTO> {
@@ -75,9 +81,9 @@ public class StatStorage {
         @Override
         public StatUriHitsResponseDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new StatUriHitsResponseDTO(
-                    rs.getString(1),
-                    rs.getString(2),
-                    rs.getInt(3));
+                    rs.getString("uri"),
+                    rs.getString("application"),
+                    rs.getInt("cnt"));
         }
     }
 }

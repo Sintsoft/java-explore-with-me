@@ -15,6 +15,7 @@ services:
       - STAT_DB_NAME=${STAT_DB_NAME}
       - STAT_DB_LOGIN=${STAT_DB_LOGIN}
       - STAT_DB_PASSWORD=${STAT_DB_PASSWORD}
+    restart: on-failure
 
   stats-db:
     container_name: stats-db
@@ -50,3 +51,4 @@ services:
       - MAIN_DB_NAME=${MAIN_DB_NAME}
       - MAIN_DB_LOGIN=${MAIN_DB_LOGIN}
       - MAIN_DB_PASSWORD=${MAIN_DB_PASSWORD}
+    restart: on-failure
