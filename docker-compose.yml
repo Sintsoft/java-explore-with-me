@@ -1,15 +1,54 @@
-version: '3.1'
+version: "3.1"
+
 services:
+
   stats-server:
+    container_name: stats-server
+    depends_on:
+      - stats-db
     ports:
-      - "9090:9090"
+      - "${STAT_PORT}:${STAT_PORT}"
+    build: ewm-statistic/statistic-server/.
+    environment:
+      - STAT_PORT=${STAT_PORT}
+      - STAT_DB_PORT=${STAT_DB_PORT}
+      - STAT_DB_NAME=${STAT_DB_NAME}
+      - STAT_DB_LOGIN=${STAT_DB_LOGIN}
+      - STAT_DB_PASSWORD=${STAT_DB_PASSWORD}
+    restart: on-failure
 
   stats-db:
+    container_name: stats-db
     image: postgres:14-alpine
-
-  ewm-service:
     ports:
-      - "8080:8080"
+      - "${STAT_DB_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${STAT_DB_NAME}
+      - POSTGRES_USER=${STAT_DB_LOGIN}
+      - POSTGRES_PASSWORD=${STAT_DB_PASSWORD}
 
   ewm-db:
+    container_name: ewm-db
     image: postgres:14-alpine
+    ports:
+      - "${MAIN_DB_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${MAIN_DB_NAME}
+      - POSTGRES_USER=${MAIN_DB_LOGIN}
+      - POSTGRES_PASSWORD=${MAIN_DB_PASSWORD}
+
+  ewm-service:
+    container_name: ewm-service
+    depends_on:
+      - stats-server
+      - ewm-db
+    ports:
+      - "${MAIN_PORT}:${MAIN_PORT}"
+    build: ewm-main/.
+    environment:
+      - MAIN_PORT=${MAIN_PORT}
+      - MAIN_DB_PORT=${MAIN_DB_PORT}
+      - MAIN_DB_NAME=${MAIN_DB_NAME}
+      - MAIN_DB_LOGIN=${MAIN_DB_LOGIN}
+      - MAIN_DB_PASSWORD=${MAIN_DB_PASSWORD}
+    restart: on-failure
