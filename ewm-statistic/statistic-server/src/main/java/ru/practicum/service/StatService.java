@@ -43,7 +43,7 @@ public class StatService {
             log.info("Request start time is after end time");
             throw new EwmInvalidRequestParameterException("Start time should be earlier than end time");
         }
-        return storage.getStats(decStart, decEnd, unique, uris);
+        return storage.getStatsUnique(decStart, decEnd, unique, uris);
     }
 
     private LocalDateTime decodeTime(String time) {

@@ -2,7 +2,6 @@ package ru.practicum.utility.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -10,12 +9,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ErrorResponseDTO {
 
-    private final String status;
+    private String status;
 
-    private final String reason;
+    private String reason;
 
-    private final String message;
+    private String message;
 
-    private final LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 
 }

@@ -1,7 +1,6 @@
 package ru.practicum.utility.database;
 
 
-import org.springframework.data.domain.AbstractPageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -102,7 +101,7 @@ public class OffsetBasedPageRequest implements Pageable, Serializable {
 
     @Override
     public Pageable withPage(int pageNumber) {
-        return new OffsetBasedPageRequest(getOffset() + pageNumber*getPageSize(), getPageSize(), getSort());
+        return new OffsetBasedPageRequest(getOffset() + pageNumber * getPageSize(), getPageSize(), getSort());
     }
 
     @Override

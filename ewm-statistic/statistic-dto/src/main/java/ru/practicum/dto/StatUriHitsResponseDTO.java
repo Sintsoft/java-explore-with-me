@@ -2,8 +2,12 @@ package ru.practicum.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigInteger;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class StatUriHitsResponseDTO {
 
@@ -11,5 +15,5 @@ public class StatUriHitsResponseDTO {
 
     private String uri;
 
-    private Integer hits;
+    private BigInteger hits;
 }

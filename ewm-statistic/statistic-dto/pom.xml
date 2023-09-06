@@ -13,6 +13,7 @@
     <name>statistic-dto</name>
 
     <properties>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
@@ -20,6 +21,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MadaraFsl</groupId>
+            <artifactId>HibernateUtil</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
