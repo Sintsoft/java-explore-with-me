@@ -28,6 +28,10 @@
             <artifactId>ewm-utility</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
