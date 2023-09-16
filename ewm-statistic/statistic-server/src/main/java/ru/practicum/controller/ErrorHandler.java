@@ -1,6 +1,7 @@
 package ru.practicum.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -51,6 +52,16 @@ public class ErrorHandler {
         return new ErrorResponseDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                 "Database interaction failed",
+                ex.getMessage(),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDTO handleMissingParan(MissingServletRequestParameterException ex) {
+        return new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.toString(),
+                "Incorrectly made request.",
                 ex.getMessage(),
                 LocalDateTime.now());
     }
