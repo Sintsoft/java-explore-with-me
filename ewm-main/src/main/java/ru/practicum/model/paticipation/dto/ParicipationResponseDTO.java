@@ -2,8 +2,6 @@ package ru.practicum.model.paticipation.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import ru.practicum.model.user.User;
-import ru.practicum.model.user.dto.UserNestedDTO;
 
 import java.time.LocalDateTime;
 
