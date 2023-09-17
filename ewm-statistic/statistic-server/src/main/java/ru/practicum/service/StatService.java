@@ -9,12 +9,12 @@ import ru.practicum.dto.StatHitRequestDTO;
 import ru.practicum.dto.StatUriHitsResponseDTO;
 import ru.practicum.model.StatEntry;
 import ru.practicum.repository.StatStorage;
+import ru.practicum.utility.commons.Constants;
 import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class StatService {
                 log.info("Time of digits");
                 return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis(Long.parseLong(time))), ZoneOffset.UTC);
             }
-            return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return LocalDateTime.parse(time, Constants.DATE_TIME_FORMAT);
         } catch (Exception ex) {
             log.warn("Time string " + time + " can't be parsed. Cause - " + ex.getMessage());
             throw new EwmInvalidRequestParameterException("Cant parse time");

@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class EventPartisipationDecisionDTO {
 
-    List<Long> requestIds;
+    private List<Long> requestIds;
 
-    String status;
+    private String status;
 }

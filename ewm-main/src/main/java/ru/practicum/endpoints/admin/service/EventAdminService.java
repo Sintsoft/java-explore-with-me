@@ -14,11 +14,11 @@ import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.event.repository.EventStorage;
 import ru.practicum.model.paticipation.repository.ParticipationStorage;
 import ru.practicum.model.user.repository.UserStorage;
+import ru.practicum.utility.commons.Constants;
 import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
 import ru.practicum.utility.exceptions.EwmRequestParameterConflict;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,9 +108,8 @@ public class EventAdminService extends EventService {
         try {
             if (stateStrings != null && !stateStrings.isEmpty()) {
                 return stateStrings.stream().map(EventStates::valueOf).collect(Collectors.toList());
-            } else {
-                return List.of();
             }
+            return List.of();
         } catch (Exception ex) {
             throw new EwmInvalidRequestParameterException("Incorrect state in request parameters");
         }
@@ -118,10 +117,7 @@ public class EventAdminService extends EventService {
 
     private LocalDateTime parseRequestDateTime(String input) {
         try {
-            if (input == null) {
-                return null;
-            }
-            return LocalDateTime.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return input == null ? null : LocalDateTime.parse(input, Constants.DATE_TIME_FORMAT);
         } catch (Exception ex) {
             throw new EwmInvalidRequestParameterException("Incorrect time format in request parameters");
         }

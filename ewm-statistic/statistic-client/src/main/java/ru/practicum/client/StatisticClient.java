@@ -15,10 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.StatHitRequestDTO;
 import ru.practicum.dto.StatUriHitsResponseDTO;
+import ru.practicum.utility.commons.Constants;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +51,8 @@ public class StatisticClient {
             boolean unique,
             List<String> uris) {
         Map<String, Object> parameters = Map.of(
-                "start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                "end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                "start", start.format(Constants.DATE_TIME_FORMAT),
+                "end", end.format(Constants.DATE_TIME_FORMAT),
                 "unique", unique
         );
         return getStatsFromServer("/stats", parameters, uris);
@@ -89,27 +88,14 @@ public class StatisticClient {
                         .map(object -> mapper.convertValue(object, StatUriHitsResponseDTO.class))
                         .collect(Collectors.toList());
                 return dtos;
-            } else {
-                return List.of();
             }
+            return List.of();
         } catch (HttpStatusCodeException e) {
             log.warn("Can't get statistics, cause: " + e.getMessage());
             throw new RuntimeException("Can't get statistics, cause: " + e.getMessage());
         } catch (Exception e) {
             log.warn("Can't get statistics, cause: " + e.getMessage());
             throw new RuntimeException("Can't get statistics, cause: " + e.getMessage());
-        }
-    }
-
-    public class Wrapper {
-        List<StatUriHitsResponseDTO> dtos;
-
-        public Wrapper() {
-            dtos = new ArrayList<>();
-        }
-
-        public List<StatUriHitsResponseDTO> getDtos() {
-            return dtos;
         }
     }
 }

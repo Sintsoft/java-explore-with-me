@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ParticipationDecisionResponseDTO {
 
-    List<ParicipationResponseDTO> confirmedRequests;
+    private List<ParicipationResponseDTO> confirmedRequests;
 
-    List<ParicipationResponseDTO> rejectedRequests;
+    private List<ParicipationResponseDTO> rejectedRequests;
 }

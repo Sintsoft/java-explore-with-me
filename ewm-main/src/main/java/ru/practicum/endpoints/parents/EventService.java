@@ -56,12 +56,8 @@ public class EventService {
                                                      List<Participation> requests,
                                                      Map<Long, Integer> views) {
         Map<Long, Integer> reqMap = new HashMap<>();
-        requests.stream().forEach(request -> {
-            if (reqMap.containsKey(request.getEvent().getId())) {
-                reqMap.replace(request.getEvent().getId(), reqMap.get(request.getEvent().getId()) + 1);
-            } else {
-                reqMap.put(request.getEvent().getId(), 1);
-            }
+        requests.forEach(request -> {
+                reqMap.put(request.getEvent().getId(), reqMap.getOrDefault(request.getEvent().getId(), 0) + 1);
         });
         return events.stream().map(event -> eventMapper.toFullDTO(
                 event,
@@ -73,13 +69,8 @@ public class EventService {
                                                        List<Participation> requests,
                                                        Map<Long, Integer> views) {
         Map<Long, Integer> reqMap = new HashMap<>();
-        if (events.isEmpty()) return List.of();
-        requests.stream().forEach(request -> {
-            if (reqMap.containsKey(request.getEvent().getId())) {
-                reqMap.replace(request.getEvent().getId(), reqMap.get(request.getEvent().getId()) + 1);
-            } else {
-                reqMap.put(request.getEvent().getId(), 1);
-            }
+        requests.forEach(request -> {
+            reqMap.put(request.getEvent().getId(), reqMap.getOrDefault(request.getEvent().getId(), 0) + 1);
         });
         return events.stream().map(event -> eventMapper.toShortDTO(
                 event,

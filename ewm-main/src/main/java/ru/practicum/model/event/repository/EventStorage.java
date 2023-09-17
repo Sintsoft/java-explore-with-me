@@ -64,10 +64,7 @@ public class EventStorage {
     public List<Event> getEventsByListId(List<Long> ids) {
         log.debug("LEVEL - Storage. METHOD - getEventsByListId. Entered");
         try {
-            if (ids == null || ids.isEmpty()) {
-                return List.of();
-            }
-            return repository.findAllById(ids);
+            return ids == null || ids.isEmpty() ? List.of() : repository.findAllById(ids);
         } catch (Exception ex) {
             log.info("LEVEL - Storage. METHOD - getEventsByListId. Failed to read compilations from database");
             throw new EwmSQLFailedException("Failed to read events from database");
@@ -139,18 +136,10 @@ public class EventStorage {
             if (paid != null) {
                 predicates.add(builder.equal(root.get("paid"), paid));
             }
-            // TODO VIEWS SORT
-            // TODO available
 
-            Predicate[] array = new Predicate[predicates.size()];
-            for (int i = 0; i < array.length; i++) {
-                array[i] = predicates.get(i);
-            }
-            criteriaQuery.select(root).where(builder.and(array));
+            criteriaQuery.select(root).where(builder.and(predicates.toArray(Predicate[]::new)));
             if (sort != null) {
-                switch (sort) {
-                    case EVENT_DATE: criteriaQuery.orderBy(builder.asc(root.get("eventDate"))); break;
-                }
+                criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
             }
             Query<Event> query = session.createQuery(criteriaQuery);
             List<Event> events = query.setFirstResult(from).setMaxResults(size).getResultList();

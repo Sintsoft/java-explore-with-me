@@ -38,10 +38,5 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.MadaraFsl</groupId>
-            <artifactId>HibernateUtil</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 </project>

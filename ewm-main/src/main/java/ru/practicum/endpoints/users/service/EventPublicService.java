@@ -14,11 +14,11 @@ import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.event.repository.EventStorage;
 import ru.practicum.model.paticipation.repository.ParticipationStorage;
 import ru.practicum.model.user.repository.UserStorage;
+import ru.practicum.utility.commons.Constants;
 import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +96,7 @@ public class EventPublicService extends EventService {
             if (input == null) {
                 return null;
             }
-            return LocalDateTime.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return LocalDateTime.parse(input, Constants.DATE_TIME_FORMAT);
         } catch (Exception ex) {
             throw new EwmInvalidRequestParameterException("Incorrect time format in request parameters");
         }

@@ -10,6 +10,7 @@ import ru.practicum.model.compilation.dto.CompilationPostRequestDTO;
 import ru.practicum.model.compilation.dto.CompilationResponseDTO;
 import ru.practicum.model.compilation.repository.CompilationStorage;
 import ru.practicum.model.event.repository.EventStorage;
+import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
 
 @Slf4j
 @Service
@@ -26,6 +27,7 @@ public class CompilatonAdminService {
     private final CompilationMapper compilationMapper;
 
     public CompilationResponseDTO addCompilation(CompilationPostRequestDTO dto) {
+        log.debug("LEVEL - Service. METHOD - addCompilation. Entered");
         return compilationMapper.toDTO(
                 compilationStorage.saveCompilation(
                         compilationMapper.fromDTO(
@@ -36,6 +38,10 @@ public class CompilatonAdminService {
     }
 
     public CompilationResponseDTO updateCompilation(CompilationPatchRequestDTO dto, Long compId) {
+        log.debug("LEVEL - Service. METHOD - updateCompilation. Entered");
+        if (compId == null || compId < 1) {
+            throw new EwmInvalidRequestParameterException("Id munst be positive number");
+        }
         return compilationMapper.toDTO(
                 compilationStorage.saveCompilation(
                         compilationMapper.fromDTO(
@@ -47,6 +53,10 @@ public class CompilatonAdminService {
     }
 
     public void deleteCompilation(Long compId) {
+        log.debug("LEVEL - Service. METHOD - deleteCompilation. Entered");
+        if (compId == null || compId < 1) {
+            throw new EwmInvalidRequestParameterException("Id munst be positive number");
+        }
         compilationStorage.removeCompilation(compId);
     }
 

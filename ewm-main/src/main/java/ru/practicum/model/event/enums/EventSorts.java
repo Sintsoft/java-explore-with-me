@@ -2,7 +2,7 @@ package ru.practicum.model.event.enums;
 
 public enum EventSorts {
 
-    EVENT_DATE("EVENT_DATE"),
+    EVENT_DATE("eventDate"),
     VIEWS("VIEWS");
 
     private String code;
