@@ -9,12 +9,12 @@ import ru.practicum.dto.StatHitRequestDTO;
 import ru.practicum.dto.StatUriHitsResponseDTO;
 import ru.practicum.model.StatEntry;
 import ru.practicum.repository.StatStorage;
+import ru.practicum.utility.commons.Constants;
 import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class StatService {
             log.info("Request start time is after end time");
             throw new EwmInvalidRequestParameterException("Start time should be earlier than end time");
         }
-        return storage.getStats(decStart, decEnd, unique, uris);
+        return storage.getStatsUnique(decStart, decEnd, unique, uris);
     }
 
     private LocalDateTime decodeTime(String time) {
@@ -53,7 +53,7 @@ public class StatService {
                 log.info("Time of digits");
                 return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis(Long.parseLong(time))), ZoneOffset.UTC);
             }
-            return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            return LocalDateTime.parse(time, Constants.DATE_TIME_FORMAT);
         } catch (Exception ex) {
             log.warn("Time string " + time + " can't be parsed. Cause - " + ex.getMessage());
             throw new EwmInvalidRequestParameterException("Cant parse time");

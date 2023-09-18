@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/ewm-main/src/main/resources/localrun.env
+/ewm-statistic/statistic-server/src/main/resources/localrun.env

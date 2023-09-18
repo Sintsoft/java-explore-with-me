@@ -32,6 +32,7 @@ public class StatisticController {
                                                 @RequestParam(value = "uris", required = false) List<String> uris) {
         log.info("Controller. Method getStat. Params: start - " + start
                 + ", end - " + end + ", unique - " + unique + ", uris - " + uris);
-        return service.getStats(start, end, unique, uris);
+        List<StatUriHitsResponseDTO> respList = service.getStats(start, end, unique, uris);
+        return respList;
     }
 }
