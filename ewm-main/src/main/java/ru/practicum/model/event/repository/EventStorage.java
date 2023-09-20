@@ -2,10 +2,15 @@ package ru.practicum.model.event.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.SQLGrammarException;
+import org.hibernate.persister.collection.QueryableCollection;
+import org.hibernate.persister.entity.Loadable;
 import org.hibernate.query.Query;
+import org.hibernate.sql.ConditionFragment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -19,10 +24,7 @@ import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmSQLContraintViolation;
 import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,7 +141,10 @@ public class EventStorage {
 
             criteriaQuery.select(root).where(builder.and(predicates.toArray(Predicate[]::new)));
             if (sort != null) {
-                criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
+                switch (sort) {
+                    case EVENT_DATE: criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
+                    case LIKES: criteriaQuery.orderBy(builder.asc(root.get("likers.size()")));
+                }
             }
             Query<Event> query = session.createQuery(criteriaQuery);
             List<Event> events = query.setFirstResult(from).setMaxResults(size).getResultList();

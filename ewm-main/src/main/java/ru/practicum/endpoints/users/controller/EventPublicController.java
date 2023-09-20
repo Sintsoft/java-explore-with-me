@@ -3,6 +3,7 @@ package ru.practicum.endpoints.users.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.StatisticClient;
 import ru.practicum.dto.StatHitRequestDTO;
@@ -48,6 +49,20 @@ public class EventPublicController {
         log.debug("LEVEL - Controller. METHOD - getEvents. Entered");
         hitStatistic(request);
         return service.getEvents(text, categories, paid, onlyAvailable, sort, rangeStart, rangeEnd, from, size);
+    }
+
+    @PostMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void postLike(@PathVariable Long eventId,
+                         @RequestHeader(name = "X-userId") long userId) {
+        service.likeEvent(eventId, userId);
+    }
+
+    @DeleteMapping("/{eventId}/dislike")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLike(@PathVariable Long eventId,
+                         @RequestHeader(name = "X-userId") long userId) {
+        service.dislikeEvent(eventId, userId);
     }
 
     private void hitStatistic(HttpServletRequest request) {

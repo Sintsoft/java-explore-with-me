@@ -45,4 +45,6 @@ public class EventFullResponseDTO {
 
     private Integer views;
 
+    private Integer likes;
+
 }

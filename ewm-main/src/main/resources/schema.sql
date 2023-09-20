@@ -56,3 +56,9 @@ create table if not exists compilation_events (
     event_id BIGINT REFERENCES events (id) NOT NULL,
     PRIMARY KEY (compilation_id, event_id)
 );
+
+create table if not exists user_liked_event (
+    event_id BIGINT REFERENCES events (id) NOT NULL,
+    liker_id BIGINT REFERENCES users (id) NOT NULL,
+    CONSTRAINT uq_likes UNIQUE (event_id, liker_id)
+)

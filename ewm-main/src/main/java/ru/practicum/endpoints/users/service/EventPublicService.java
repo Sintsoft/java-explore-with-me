@@ -12,11 +12,14 @@ import ru.practicum.model.event.dto.EventShortResponseDTO;
 import ru.practicum.model.event.enums.EventSorts;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.event.repository.EventStorage;
+import ru.practicum.model.paticipation.enums.ParticipationRequestStatus;
 import ru.practicum.model.paticipation.repository.ParticipationStorage;
+import ru.practicum.model.user.User;
 import ru.practicum.model.user.repository.UserStorage;
 import ru.practicum.utility.commons.Constants;
 import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmInvalidRequestParameterException;
+import ru.practicum.utility.exceptions.EwmRequestParameterConflict;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,6 +84,35 @@ public class EventPublicService extends EventService {
         return combineShort(events,
                 participationStorage.getEventsParticipations(events, true),
                 getEventsStatistics(events));
+    }
+
+    public void likeEvent(Long eventId, Long userId) {
+        Event event = eventStorage.getEvent(eventId);
+        User user = userStorage.getUser(userId);
+        if(user.equals(event.getInitiator())) {
+            throw new EwmRequestParameterConflict("Initiator can't like event");
+        }
+        if (participationStorage.getUserParticipations(user)
+                .stream().noneMatch(request -> request.getStatus().equals(ParticipationRequestStatus.CONFIRMED))) {
+            throw new EwmInvalidRequestParameterException("User can't like event without confirmed request participation");
+        }
+        event.getLikers().add(user);
+        eventStorage.saveEvent(event);
+
+    }
+
+    public void dislikeEvent(Long eventId, Long userId) {
+        Event event = eventStorage.getEvent(eventId);
+        User user = userStorage.getUser(userId);
+        if (user.equals(event.getInitiator())) {
+            throw new EwmRequestParameterConflict("Initiator can't like event");
+        }
+        if (!event.getLikers().contains(user)) {
+            throw new EwmInvalidRequestParameterException("User can't dislike this event");
+        }
+        event.getLikers().remove(user);
+        eventStorage.saveEvent(event);
+
     }
 
     private EventSorts parseSort(String sortString) {

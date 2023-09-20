@@ -1,12 +1,16 @@
 package ru.practicum.model.event;
 
 import lombok.Data;
+import org.hibernate.annotations.Formula;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -64,6 +68,14 @@ public class Event {
     @Column(name = "publication_time")
     private LocalDateTime publishedOn;
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "user_liked_event",
+            joinColumns = { @JoinColumn(name = "event_id")},
+            inverseJoinColumns = { @JoinColumn(name = "liker_id")}
+    )
+    private Set<User> likers = new HashSet<>();
+
     /*
     * Inner fields
     * */
@@ -77,5 +89,14 @@ public class Event {
     @Column(name = "sended")
     private boolean sended = false;
 
+    @Formula("likers.size()")
+    private Integer likersSize;
 
+    public static class LikerComparator implements Comparator<Set> {
+
+        @Override
+        public int compare(Set set1, Set set2) {
+            return set1.size() - set2.size();
+        }
+    }
 }

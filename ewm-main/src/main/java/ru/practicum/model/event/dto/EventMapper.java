@@ -44,9 +44,11 @@ public interface EventMapper {
     @Mapping(source = "event.longtitude", target = "location.lon")
     @Mapping(source = "confirmedRequests", target = "confirmedRequests")
     @Mapping(source = "views", target = "views")
+    @Mapping(target = "likes", expression = "java(event.getLikers().size())")
     EventFullResponseDTO toFullDTO(Event event, Integer confirmedRequests, Integer views);
 
     @Mapping(source = "confirmedRequests", target = "confirmedRequests")
     @Mapping(source = "views", target = "views")
+    @Mapping(target = "likes", expression = "java(event.getLikers().size())")
     EventShortResponseDTO toShortDTO(Event event, Integer confirmedRequests, Integer views);
 }
