@@ -4,7 +4,7 @@ public enum EventSorts {
 
     EVENT_DATE("eventDate"),
 
-    LIKES("likers"),
+    LIKES("likes"),
     VIEWS("VIEWS");
 
     private String code;

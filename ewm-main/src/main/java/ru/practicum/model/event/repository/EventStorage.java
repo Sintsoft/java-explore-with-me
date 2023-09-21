@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.event.enums.EventSorts;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.user.User;
@@ -24,6 +25,9 @@ import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmSQLContraintViolation;
 import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -141,10 +145,7 @@ public class EventStorage {
 
             criteriaQuery.select(root).where(builder.and(predicates.toArray(Predicate[]::new)));
             if (sort != null) {
-                switch (sort) {
-                    case EVENT_DATE: criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
-                    case LIKES: criteriaQuery.orderBy(builder.asc(root.get("likers.size()")));
-                }
+                criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
             }
             Query<Event> query = session.createQuery(criteriaQuery);
             List<Event> events = query.setFirstResult(from).setMaxResults(size).getResultList();
@@ -155,5 +156,74 @@ public class EventStorage {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<EventViewEntity> search(List<User> users,
+                                        List<Category> categories,
+                                        List<EventStates> states,
+                                        String searchString,
+                                        Boolean paid,
+                                        Boolean avaliable,
+                                        EventSorts sort,
+                                        LocalDateTime start,
+                                        LocalDateTime end,
+                                        int from,
+                                        int size,
+                                        boolean isPublic) {
+        try (Session session = sessionFactory.openSession();) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<EventViewEntity> criteriaQuery = builder.createQuery(EventViewEntity.class);
+            Root<EventViewEntity> root = criteriaQuery.from(EventViewEntity.class);
+            List<Predicate> predicates = new LinkedList<>();
 
+            if (isPublic) {
+                predicates.add(builder.isNotNull(root.get("publishedOn").as(LocalDateTime.class)));
+            }
+            /*if (admin) {
+                predicates.add(builder.isTrue(root.get("sended")));
+            }*/
+            if (users != null && !users.isEmpty()) {
+                predicates.add(root.get("initiator").in(users));
+            }
+            if (states != null && !states.isEmpty()) {
+                predicates.add(root.get("state").as(EventStates.class).in(states));
+            }
+            if (categories != null && !categories.isEmpty()) {
+                predicates.add(root.get("category").in(categories));
+            }
+            if (start != null) {
+                predicates.add(builder.greaterThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), start));
+            }
+            if (end != null) {
+                predicates.add(builder.lessThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), end));
+            }
+            if (searchString != null && !searchString.isBlank()) {
+                predicates.add(builder.or(
+                        builder.like(builder.lower(root.get("title").as(String.class)),
+                                "%" + searchString.toLowerCase() + "%"),
+                        builder.like(builder.lower(root.get("annotation").as(String.class)),
+                                "%" + searchString.toLowerCase() + "%"),
+                        builder.like(builder.lower(root.get("description").as(String.class)),
+                                "%" + searchString.toLowerCase() + "%")));
+            }
+            if (paid != null) {
+                predicates.add(builder.equal(root.get("paid"), paid));
+            }
+
+            criteriaQuery.select(root).where(builder.and(predicates.toArray(Predicate[]::new)));
+            if (sort != null) {
+                switch (sort) {
+                    case LIKES: criteriaQuery.orderBy(builder.desc(root.get(sort.getCode()))); break;
+                    case EVENT_DATE: criteriaQuery.orderBy(builder.asc(root.get(sort.getCode()))); break;
+                    default: criteriaQuery.orderBy(builder.desc(root.get("id"))); break;
+                }
+            }
+
+            return session.createQuery(criteriaQuery)
+                    .setFirstResult(from)
+                    .setMaxResults(size).getResultList();
+        } catch (SQLGrammarException ex) {
+            log.warn("searchForEvents - " + ex.getMessage() + "\n" + ex.getStackTrace().toString());
+            throw new EwmSQLFailedException("Failed to find events due to: " + ex.getMessage());
+        }
+    }
 }

@@ -6,6 +6,7 @@ import ru.practicum.client.StatisticClient;
 import ru.practicum.endpoints.parents.EventService;
 import ru.practicum.model.category.repository.CategoryStorage;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.event.dto.EventFullResponseDTO;
 import ru.practicum.model.event.dto.EventMapper;
 import ru.practicum.model.event.dto.EventShortResponseDTO;
@@ -24,6 +25,7 @@ import ru.practicum.utility.exceptions.EwmRequestParameterConflict;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -49,7 +51,7 @@ public class EventPublicService extends EventService {
         if (event.getState() != EventStates.PUBLISHED) {
             throw new EwmEntityNotFoundException("Event with id = " + eventId + " was not found");
         }
-        Map<Long, Integer> views = getEventsStatistics(List.of(event));
+        Map<Long, Integer> views = getEventsStatistics(List.of(event.getId()));
         return eventMapper.toFullDTO(event,
                 participationStorage.getEventsParticipations(List.of(event), true).size(),
                 views.getOrDefault(eventId, 0));
@@ -67,23 +69,23 @@ public class EventPublicService extends EventService {
 
     ) {
         startBeforeEnd(parseRequestDateTime(start), parseRequestDateTime(end));
-        List<Event> events = eventStorage.searchForEvents(
-                        null,
-                        categories == null ? null : categoryStorage.getCategoriesByListId(categories),
-                        List.of(EventStates.PUBLISHED),
-                        text,
-                        paid,
-                        onlyAvailable,
-                        sort == null ? null : parseSort(sort),
-                        start == null ? LocalDateTime.now() : parseRequestDateTime(start),
-                        parseRequestDateTime(end),
-                        from,
-                        size,
-                        false,
-                        true);
-        return combineShort(events,
-                participationStorage.getEventsParticipations(events, true),
-                getEventsStatistics(events));
+        List<EventViewEntity> eve = eventStorage.search(null,
+                categories == null ? null : categoryStorage.getCategoriesByListId(categories),
+                List.of(EventStates.PUBLISHED),
+                text,
+                paid,
+                onlyAvailable,
+                sort == null ? null : parseSort(sort),
+                start == null ? LocalDateTime.now() : parseRequestDateTime(start),
+                parseRequestDateTime(end),
+                from,
+                size,
+                true);
+        Map<Long, Integer> map = getEventsStatistics(eve.stream()
+                .map(EventViewEntity::getId).collect(Collectors.toList()));
+        return eve.stream()
+                .map(ev -> eventMapper.toShortDTO(ev, map.getOrDefault(ev.getId(), 0)))
+                .collect(Collectors.toList());
     }
 
     public void likeEvent(Long eventId, Long userId) {

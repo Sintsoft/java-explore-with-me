@@ -6,6 +6,7 @@ import ru.practicum.client.StatisticClient;
 import ru.practicum.endpoints.parents.EventService;
 import ru.practicum.model.category.repository.CategoryStorage;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.event.dto.EventFullResponseDTO;
 import ru.practicum.model.event.dto.EventMapper;
 import ru.practicum.model.event.dto.EventPatchRequestDTO;
@@ -20,6 +21,7 @@ import ru.practicum.utility.exceptions.EwmRequestParameterConflict;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -74,7 +76,7 @@ public class EventAdminService extends EventService {
         return eventMapper.toFullDTO(
                 eventStorage.saveEvent(event),
                 participationStorage.getEventsParticipations(List.of(event), true).size(),
-                getEventsStatistics(List.of(event)).getOrDefault(eventId, 0));
+                getEventsStatistics(List.of(event.getId())).getOrDefault(eventId, 0));
     }
 
     public List<EventFullResponseDTO> getEvents(List<Long> users,
@@ -85,7 +87,7 @@ public class EventAdminService extends EventService {
                                                 int from,
                                                 int size) {
         startBeforeEnd(parseRequestDateTime(start), parseRequestDateTime(end));
-        List<Event> events = eventStorage.searchForEvents(
+        List<EventViewEntity> events = eventStorage.search(
                         users != null ? userStorage.getUsersByListId(users) : null,
                         categories != null ? categoryStorage.getCategoriesByListId(categories) : null,
                         states != null ? parseStates(states) : null,
@@ -97,11 +99,12 @@ public class EventAdminService extends EventService {
                         parseRequestDateTime(end),
                         from,
                         size,
-                        true,
                         false);
-        return combineFull(events,
-                participationStorage.getEventsParticipations(events, true),
-                getEventsStatistics(events));
+        Map<Long, Integer> map = getEventsStatistics(events.stream()
+                .map(EventViewEntity::getId).collect(Collectors.toList()));
+        return events.stream()
+                .map(ev -> eventMapper.toFullDTO(ev, map.getOrDefault(ev.getId(), 0)))
+                .collect(Collectors.toList());
     }
 
     private List<EventStates> parseStates(List<String> stateStrings) {

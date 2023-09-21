@@ -7,6 +7,7 @@ import ru.practicum.client.StatisticClient;
 import ru.practicum.endpoints.parents.EventService;
 import ru.practicum.model.category.repository.CategoryStorage;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.event.dto.*;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.event.enums.EventUserStateActions;
@@ -26,6 +27,7 @@ import ru.practicum.utility.exceptions.EwmRequestParameterConflict;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -97,7 +99,7 @@ public class EventPrivateService extends EventService {
         }
         return eventMapper.toFullDTO(eventStorage.saveEvent(event),
                 participationStorage.getEventsParticipations(List.of(event), true).size(),
-                getEventsStatistics(List.of(event)).get(eventId));
+                getEventsStatistics(List.of(event.getId())).getOrDefault(eventId, 0));
 
     }
 
@@ -109,11 +111,11 @@ public class EventPrivateService extends EventService {
         return eventMapper.toFullDTO(
                 event,
                 participationStorage.getEventsParticipations(List.of(event), true).size(),
-                getEventsStatistics(List.of(event)).get(eventId));
+                getEventsStatistics(List.of(event.getId())).getOrDefault(eventId, 0));
     }
 
     public List<EventShortResponseDTO> getEvents(Long userId, int from, int size) {
-        List<Event> events = eventStorage.searchForEvents(
+        List<EventViewEntity> events = eventStorage.search(
                 List.of(userStorage.getUser(userId)),
                 null,
                 null,
@@ -125,11 +127,12 @@ public class EventPrivateService extends EventService {
                 null,
                 from,
                 size,
-                false,
                 false);
-        return combineShort(events,
-                participationStorage.getEventsParticipations(events, true),
-                getEventsStatistics(events));
+        Map<Long, Integer> map = getEventsStatistics(events.stream()
+                .map(EventViewEntity::getId).collect(Collectors.toList()));
+        return events.stream()
+                .map(ev -> eventMapper.toShortDTO(ev, map.getOrDefault(ev.getId(), 0)))
+                .collect(Collectors.toList());
     }
 
     public List<ParicipationResponseDTO> getEvetRequests(Long eventId) {

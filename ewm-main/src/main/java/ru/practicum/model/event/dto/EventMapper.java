@@ -7,6 +7,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.dto.CategoryMapper;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.user.User;
 import ru.practicum.model.user.dto.UserMapper;
 
@@ -47,8 +48,17 @@ public interface EventMapper {
     @Mapping(target = "likes", expression = "java(event.getLikers().size())")
     EventFullResponseDTO toFullDTO(Event event, Integer confirmedRequests, Integer views);
 
+    @Mapping(source = "event.lattitude", target = "location.lat")
+    @Mapping(source = "event.longtitude", target = "location.lon")
+    @Mapping(source = "views", target = "views")
+    @Mapping(target = "likes", expression = "java(event.getLikers().size())")
+    EventFullResponseDTO toFullDTO(EventViewEntity event, Integer views);
+
     @Mapping(source = "confirmedRequests", target = "confirmedRequests")
     @Mapping(source = "views", target = "views")
     @Mapping(target = "likes", expression = "java(event.getLikers().size())")
     EventShortResponseDTO toShortDTO(Event event, Integer confirmedRequests, Integer views);
+
+    @Mapping(source = "views", target = "views")
+    EventShortResponseDTO toShortDTO(EventViewEntity event, Integer views);
 }
