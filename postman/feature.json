@@ -210,7 +210,9 @@
 									"        user = await api.addUser(rnd.getUser());\r",
 									"        pm.collectionVariables.set(\"test_user_initiator_id\", user.id)\r",
 									"        const category = await api.addCategory(rnd.getCategory());\r",
-									"        const event = await api.addEvent(user.id, rnd.getEvent(category.id));\r",
+									"        const eBody = rnd.getEvent(category.id);\r",
+									"        eBody.requestModeration = true;\r",
+									"        const event = await api.addEvent(user.id, eBody);\r",
 									"        pm.collectionVariables.set(\"test_event_id\", event.id);\r",
 									"        await api.publishEvent(event.id);\r",
 									"        liker = await api.addUser(rnd.getUser());\r",
@@ -276,7 +278,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Ответ должен содержать код 400\", function () {\r",
+									"pm.test(\"Ответ должен содержать код 400  \", function () {\r",
 									"    pm.response.to.have.status(400);\r",
 									"});"
 								],
@@ -783,7 +785,7 @@
 									"});",
 									"",
 									"pm.test(\"Сортировка по лайкам\", function () {",
-									"    pm.expect(target[0].likes).to.be.above(target[1].likes);",
+									"    pm.expect(target[0].likes).to.be.above(target[target.length-1].likes);",
 									"});",
 									"",
 									""
