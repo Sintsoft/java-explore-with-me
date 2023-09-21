@@ -95,7 +95,7 @@ public class EventPublicService extends EventService {
             throw new EwmRequestParameterConflict("Initiator can't like event");
         }
         if (!event.getState().equals(EventStates.PUBLISHED)) {
-            throw new EwmRequestParameterConflict("Event is not published");
+            throw new EwmInvalidRequestParameterException("Event is not published");
         }
         if (participationStorage.getUserParticipations(user)
                 .stream().noneMatch(request -> request.getStatus().equals(ParticipationRequestStatus.CONFIRMED))) {
