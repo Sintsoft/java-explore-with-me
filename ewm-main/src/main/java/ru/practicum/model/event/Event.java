@@ -1,13 +1,11 @@
 package ru.practicum.model.event;
 
 import lombok.Data;
-import org.hibernate.annotations.Formula;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -69,7 +67,7 @@ public class Event {
     @Column(name = "publication_time")
     private LocalDateTime publishedOn;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_liked_event",
             joinColumns = { @JoinColumn(name = "event_id")},

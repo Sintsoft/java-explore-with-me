@@ -51,7 +51,6 @@ public interface EventMapper {
     @Mapping(source = "event.lattitude", target = "location.lat")
     @Mapping(source = "event.longtitude", target = "location.lon")
     @Mapping(source = "views", target = "views")
-    @Mapping(target = "likes", expression = "java(event.getLikers().size())")
     EventFullResponseDTO toFullDTO(EventViewEntity event, Integer views);
 
     @Mapping(source = "confirmedRequests", target = "confirmedRequests")

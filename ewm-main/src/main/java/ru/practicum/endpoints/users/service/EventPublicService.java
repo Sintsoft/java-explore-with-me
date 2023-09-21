@@ -91,8 +91,11 @@ public class EventPublicService extends EventService {
     public void likeEvent(Long eventId, Long userId) {
         Event event = eventStorage.getEvent(eventId);
         User user = userStorage.getUser(userId);
-        if(user.equals(event.getInitiator())) {
+        if (user.equals(event.getInitiator())) {
             throw new EwmRequestParameterConflict("Initiator can't like event");
+        }
+        if (!event.getState().equals(EventStates.PUBLISHED)) {
+            throw new EwmRequestParameterConflict("Event is not published");
         }
         if (participationStorage.getUserParticipations(user)
                 .stream().noneMatch(request -> request.getStatus().equals(ParticipationRequestStatus.CONFIRMED))) {
