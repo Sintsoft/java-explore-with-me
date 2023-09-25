@@ -19,6 +19,7 @@ import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmSQLContraintViolation;
 import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -103,11 +104,12 @@ public class EventStorage {
             List<Predicate> predicates = new LinkedList<>();
 
             if (isPublic) {
-                predicates.add(
-                    builder.and(
-                        builder.isNotNull(root.get("publishedOn").as(LocalDateTime.class)),
-                        builder.greaterThan(root.get("publishedOn").as(LocalDateTime.class), LocalDateTime.now())
-                ));
+                predicates.add(builder.isNotNull(root.get("publishedOn").as(LocalDateTime.class)));
+                if (start == null && end == null) {
+                    predicates.add(
+                            builder.greaterThan(
+                                    root.get("eventDate").as(LocalDateTime.class), LocalDateTime.now()));
+                }
             }
             if (users != null && !users.isEmpty()) {
                 predicates.add(root.get("initiator").in(users));
@@ -142,8 +144,8 @@ public class EventStorage {
                     default: criteriaQuery.orderBy(builder.desc(root.get("id"))); break;
                 }
             }
-
-            return session.createQuery(criteriaQuery)
+            Query query = session.createQuery(criteriaQuery);
+            return query
                     .setFirstResult(from)
                     .setMaxResults(size).getResultList();
         } catch (SQLGrammarException ex) {
