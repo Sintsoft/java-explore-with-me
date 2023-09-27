@@ -1,2 +1,4 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+
+Feature PR
+https://github.com/Sintsoft/java-explore-with-me/pull/7

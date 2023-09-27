@@ -56,3 +56,19 @@ create table if not exists compilation_events (
     event_id BIGINT REFERENCES events (id) NOT NULL,
     PRIMARY KEY (compilation_id, event_id)
 );
+
+create table if not exists user_liked_event (
+    event_id BIGINT REFERENCES events (id) NOT NULL,
+    liker_id BIGINT REFERENCES users (id) NOT NULL,
+    CONSTRAINT uq_likes UNIQUE (event_id, liker_id)
+);
+
+create or replace view events_calc as
+select e.*, coalesce(ule.likes, 0) as likes, coalesce(rq.confirmedRequests, 0) as confirmedRequests
+from events e
+left join (
+	select event_id, count(*) as likes from public.user_liked_event group by event_id) ule
+	on ule.event_id =e.id
+left join (
+	select event_id, count(*) as confirmedRequests from participations p where p.status = 'CONFIRMED' group by event_id) rq
+	on rq.event_id =e.id;

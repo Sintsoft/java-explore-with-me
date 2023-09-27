@@ -78,14 +78,14 @@ public class EventService {
                 views.getOrDefault(event.getId(), 0))).collect(Collectors.toList());
     }
 
-    protected Map<Long, Integer> getEventsStatistics(List<Event> events) {
+    protected Map<Long, Integer> getEventsStatistics(List<Long> events) {
         Map<Long, Integer> views = new HashMap<>();
         if (events.isEmpty()) return Map.of();
         List<StatUriHitsResponseDTO> dtos = statisticClient.getStatistic(
                         LocalDateTime.now().minusYears(100),
                         LocalDateTime.now().plusYears(100),
                         true,
-                        events.stream().map(event -> "/events/" + event.getId()).collect(Collectors.toList()));
+                        events.stream().map(event -> "/events/" + event).collect(Collectors.toList()));
         dtos.stream().forEach(entity -> {
                     log.info("EVENTID=" + entity.getUri().substring(8));
                     views.put(Long.parseLong(entity.getUri().substring(8)), entity.getHits().intValue());

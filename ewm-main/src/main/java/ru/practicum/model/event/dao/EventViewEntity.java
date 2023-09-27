@@ -1,24 +1,24 @@
-package ru.practicum.model.event;
+package ru.practicum.model.event.dao;
 
 import lombok.Data;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "events")
-public class Event {
+@Immutable
+@Subselect("SELECT * FROM events_calc")
+public class EventViewEntity {
 
     /*
-    * Shared with request fields
-    * */
+     * Shared with request fields
+     * */
 
     @Column(name = "annotation")
     private String annotation;
@@ -46,8 +46,8 @@ public class Event {
     private LocalDateTime eventDate;
 
     /*
-    * Shared with respose fields
-    * */
+     * Shared with respose fields
+     * */
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,17 +67,9 @@ public class Event {
     @Column(name = "publication_time")
     private LocalDateTime publishedOn;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_liked_event",
-            joinColumns = { @JoinColumn(name = "event_id")},
-            inverseJoinColumns = { @JoinColumn(name = "liker_id")}
-    )
-    private Set<User> likers = new HashSet<>();
-
     /*
-    * Inner fields
-    * */
+     * Inner fields
+     * */
 
     @Column(name = "lattitude")
     private Float lattitude;
@@ -88,11 +80,9 @@ public class Event {
     @Column(name = "sended")
     private boolean sended = false;
 
-    public static class LikerComparator implements Comparator<Set> {
+    @Column(name = "likes")
+    private Integer likes;
 
-        @Override
-        public int compare(Set set1, Set set2) {
-            return set1.size() - set2.size();
-        }
-    }
+    @Column(name = "confirmedRequests")
+    private Integer confirmedRequests;
 }

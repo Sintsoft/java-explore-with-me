@@ -3,6 +3,8 @@ package ru.practicum.model.event.enums;
 public enum EventSorts {
 
     EVENT_DATE("eventDate"),
+
+    LIKES("likes"),
     VIEWS("VIEWS");
 
     private String code;

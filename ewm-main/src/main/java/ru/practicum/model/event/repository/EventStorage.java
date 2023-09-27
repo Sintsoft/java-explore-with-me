@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.SQLGrammarException;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.dao.EventViewEntity;
 import ru.practicum.model.event.enums.EventSorts;
 import ru.practicum.model.event.enums.EventStates;
 import ru.practicum.model.user.User;
@@ -19,6 +19,7 @@ import ru.practicum.utility.exceptions.EwmEntityNotFoundException;
 import ru.practicum.utility.exceptions.EwmSQLContraintViolation;
 import ru.practicum.utility.exceptions.EwmSQLFailedException;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -84,31 +85,32 @@ public class EventStorage {
     }
 
     @Transactional(readOnly = true)
-    public List<Event> searchForEvents(List<User> users,
-                                       List<Category> categories,
-                                       List<EventStates> states,
-                                       String searchString,
-                                       Boolean paid,
-                                       Boolean avaliable,
-                                       EventSorts sort,
-                                       LocalDateTime start,
-                                       LocalDateTime end,
-                                       int from,
-                                       int size,
-                                       boolean admin/* админский запрос */,
-                                       boolean isPublic) {
-        try (Session session = sessionFactory.openSession();) {
+    public List<EventViewEntity> search(List<User> users,
+                                        List<Category> categories,
+                                        List<EventStates> states,
+                                        String searchString,
+                                        Boolean paid,
+                                        Boolean avaliable,
+                                        EventSorts sort,
+                                        LocalDateTime start,
+                                        LocalDateTime end,
+                                        int from,
+                                        int size,
+                                        boolean isPublic) {
+        try (Session session = sessionFactory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Event> criteriaQuery = builder.createQuery(Event.class);
-            Root<Event> root = criteriaQuery.from(Event.class);
-
+            CriteriaQuery<EventViewEntity> criteriaQuery = builder.createQuery(EventViewEntity.class);
+            Root<EventViewEntity> root = criteriaQuery.from(EventViewEntity.class);
             List<Predicate> predicates = new LinkedList<>();
+
             if (isPublic) {
                 predicates.add(builder.isNotNull(root.get("publishedOn").as(LocalDateTime.class)));
+                if (start == null && end == null) {
+                    predicates.add(
+                            builder.greaterThan(
+                                    root.get("eventDate").as(LocalDateTime.class), LocalDateTime.now()));
+                }
             }
-            /*if (admin) {
-                predicates.add(builder.isTrue(root.get("sended")));
-            }*/
             if (users != null && !users.isEmpty()) {
                 predicates.add(root.get("initiator").in(users));
             }
@@ -126,12 +128,9 @@ public class EventStorage {
             }
             if (searchString != null && !searchString.isBlank()) {
                 predicates.add(builder.or(
-                        builder.like(builder.lower(root.get("title").as(String.class)),
-                        "%" + searchString.toLowerCase() + "%"),
-                        builder.like(builder.lower(root.get("annotation").as(String.class)),
-                        "%" + searchString.toLowerCase() + "%"),
-                        builder.like(builder.lower(root.get("description").as(String.class)),
-                        "%" + searchString.toLowerCase() + "%")));
+                        craetSearchPredicate(builder, root, "title", searchString),
+                        craetSearchPredicate(builder, root, "annotation", searchString),
+                        craetSearchPredicate(builder, root, "description", searchString)));
             }
             if (paid != null) {
                 predicates.add(builder.equal(root.get("paid"), paid));
@@ -139,16 +138,27 @@ public class EventStorage {
 
             criteriaQuery.select(root).where(builder.and(predicates.toArray(Predicate[]::new)));
             if (sort != null) {
-                criteriaQuery.orderBy(builder.asc(root.get(sort.getCode())));
+                switch (sort) {
+                    case LIKES: criteriaQuery.orderBy(builder.desc(root.get(sort.getCode()))); break;
+                    case EVENT_DATE: criteriaQuery.orderBy(builder.asc(root.get(sort.getCode()))); break;
+                    default: criteriaQuery.orderBy(builder.desc(root.get("id"))); break;
+                }
             }
-            Query<Event> query = session.createQuery(criteriaQuery);
-            List<Event> events = query.setFirstResult(from).setMaxResults(size).getResultList();
-            return events;
+            Query query = session.createQuery(criteriaQuery);
+            return query
+                    .setFirstResult(from)
+                    .setMaxResults(size).getResultList();
         } catch (SQLGrammarException ex) {
             log.warn("searchForEvents - " + ex.getMessage() + "\n" + ex.getStackTrace().toString());
             throw new EwmSQLFailedException("Failed to find events due to: " + ex.getMessage());
         }
     }
 
-
+    private Predicate craetSearchPredicate(CriteriaBuilder builder,
+                                           Root<EventViewEntity> root,
+                                           String field,
+                                           String searchSrt) {
+        return builder.like(builder.lower(root.get(field).as(String.class)),
+                "%" + searchSrt.toLowerCase() + "%");
+    }
 }
